@@ -40,7 +40,7 @@ public class TestUtils
 				Thread.sleep( 10 );
 				if( System.currentTimeMillis() > timeout )
 				{
-					throw new TimeoutException();
+					throw new TimeoutException("Timeout after " + timeoutInSeconds + " seconds. Screenshot saved as: " + GuiTest.captureScreenshot().getAbsolutePath());
 				}
 			}
 		}
