@@ -17,6 +17,7 @@ public class CDIButton extends Button {
         if (logger.isDebugEnabled()) {
             logger.debug("text will set to -> " + text);
         }
+        System.out.println("logger = " + logger);
         this.setText(text);
     }
 

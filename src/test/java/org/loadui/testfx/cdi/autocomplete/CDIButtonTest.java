@@ -38,8 +38,8 @@ public class CDIButtonTest extends GuiTest {
     protected Parent getRootNode() {
         final CDIButton button = cdi.getManagedInstance(CDIButton.class);
         button.setId("btn");
-        button.setText("Hello World");
-        button.setOnAction((actionEvent)-> button.setText( "was clicked" ));
+        button.setLoggedText("Hello World");
+        button.setOnAction((actionEvent)-> button.setLoggedText( "was clicked" ));
         return button;
     }
 
