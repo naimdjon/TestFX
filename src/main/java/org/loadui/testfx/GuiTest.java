@@ -74,7 +74,9 @@ public abstract class GuiTest
 	private static final SettableFuture<Stage> stageFuture = SettableFuture.create();
 	protected static Stage stage;
 
-    private @Inject ManagedInstanceCreator creator;
+    public final CDIContainerSingleton cdi = CDIContainerSingleton.getInstance();
+
+    public @Inject ManagedInstanceCreator creator;
 
     public void launchJavaFXApplication(@Observes @CDIStartupScene Stage primaryStage) {
          //CDI started
@@ -108,7 +110,8 @@ public abstract class GuiTest
 	public void setupStage() throws Throwable
 	{
         //not nice but we need it
-        CDIContainerSingleton.getInstance().activateCDI(this);
+
+        cdi.activateCDI(this);
         showNodeInStage();
 	}
 
