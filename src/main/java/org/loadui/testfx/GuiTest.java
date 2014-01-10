@@ -43,8 +43,15 @@ import org.loadui.testfx.exceptions.NoNodesVisibleException;
 import org.loadui.testfx.utils.FXTestUtils;
 import org.loadui.testfx.utils.KeyCodeUtils;
 import org.loadui.testfx.utils.TestUtils;
+import org.rapidpm.commons.cdi.ManagedInstanceCreator;
+import org.rapidpm.commons.cdi.fx.CDIJavaFXBaseApplication;
+import org.rapidpm.commons.cdi.fx.CDIStartupScene;
+import org.rapidpm.commons.cdi.se.CDIContainerSingleton;
 
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.New;
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -67,19 +74,31 @@ public abstract class GuiTest
 	private static final SettableFuture<Stage> stageFuture = SettableFuture.create();
 	protected static Stage stage;
 
-	public static class TestFxApp extends Application
+    private @Inject ManagedInstanceCreator creator;
+
+    public void launchJavaFXApplication(@Observes @CDIStartupScene Stage primaryStage) {
+         //CDI started
+        stage = creator.activateCDI(primaryStage);
+    }
+
+	public static class TestFxApp extends CDIJavaFXBaseApplication
 	{
 		private static Scene scene = null;
 
-		@Override
-		public void start( Stage primaryStage ) throws Exception
-		{
-            primaryStage.initStyle(StageStyle.UNDECORATED);
-			primaryStage.show();
-			stageFuture.set( primaryStage );
-		}
+//		@Override
+//		public void start( Stage primaryStage ) throws Exception
+//		{
+//		}
 
-		public static void setRoot( Parent rootNode )
+        @Override
+        public void startImpl(Stage primaryStage) throws Exception {
+            primaryStage.initStyle(StageStyle.UNDECORATED);
+            primaryStage.show();
+            stageFuture.set( primaryStage );
+        }
+
+
+        public static void setRoot( Parent rootNode )
 		{
 			scene.setRoot( rootNode );
 		}
@@ -88,7 +107,9 @@ public abstract class GuiTest
 	@Before
 	public void setupStage() throws Throwable
 	{
-		showNodeInStage();
+        //not nice but we need it
+        CDIContainerSingleton.getInstance().activateCDI(this);
+        showNodeInStage();
 	}
 
 	protected abstract Parent getRootNode();
@@ -125,11 +146,13 @@ public abstract class GuiTest
 				@Override
 				public void run()
 				{
-					Scene scene = SceneBuilder
+                    final Parent rootNode = getRootNode();
+                    final Parent parent = creator.activateCDI(rootNode);
+                    Scene scene = SceneBuilder
 							.create()
-							.width( 600 )
-							.height( 400 )
-							.root( getRootNode() ).build();
+							.width(600)
+							.height(400)
+							.root(parent).build();
 
 					if( stylesheet != null )
 						scene.getStylesheets().add( stylesheet );

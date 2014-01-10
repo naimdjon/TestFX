@@ -39,22 +39,27 @@ import javafx.stage.Stage;
 import com.google.common.util.concurrent.SettableFuture;
 
 import org.loadui.testfx.GuiTest;
+import org.rapidpm.commons.cdi.se.CDIContainerSingleton;
 
 public class FXTestUtils
 {
+    private static CDIContainerSingleton cdi = CDIContainerSingleton.getInstance();
+
 	public static void bringToFront( final Stage stage ) throws Exception
 	{
-		invokeAndWait( new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				//stage.setIconified( true );
-				//stage.setIconified( false );
-				stage.toBack();
-				stage.toFront();
-			}
-		}, 5 );
+        final Runnable task = new Runnable() {
+
+            //here you could use inject
+
+            @Override
+            public void run() {
+                //stage.setIconified( true );
+                //stage.setIconified( false );
+                stage.toBack();
+                stage.toFront();
+            }
+        };
+        invokeAndWait(cdi.activateCDI(task), 5 );
 		Thread.sleep( 250 );
 	}
 
@@ -109,22 +114,22 @@ public class FXTestUtils
 	{
 		final SettableFuture<Void> future = SettableFuture.create();
 
-		Platform.runLater( new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				try
-				{
-					task.call();
-					future.set( null );
-				}
-				catch( Throwable e )
-				{
-					future.setException( e );
-				}
-			}
-		} );
+        final Runnable runnable  = new Runnable() {
+
+            //here you could use inject
+
+            @Override
+            public void run() {
+                try {
+                    task.call();
+                    future.set(null);
+                } catch (Throwable e) {
+                    future.setException(e);
+                }
+            }
+        };
+
+        Platform.runLater(cdi.activateCDI(runnable) );
 
 		try
 		{
@@ -153,16 +158,18 @@ public class FXTestUtils
 	 */
 	public static void invokeAndWait( final Runnable task, int timeoutInSeconds ) throws Exception
 	{
-		invokeAndWait( new Callable<Void>()
-		{
-			@Override
-			public Void call() throws Exception
-			{
-				task.run();
+        final Callable<Void> callable = new Callable<Void>() {
 
-				return null;
-			}
-		}, timeoutInSeconds );
+            //here you could use inject
+
+            @Override
+            public Void call() throws Exception {
+                task.run();
+
+                return null;
+            }
+        };
+        invokeAndWait(cdi.activateCDI(callable), timeoutInSeconds );
 	}
 
 	/**
