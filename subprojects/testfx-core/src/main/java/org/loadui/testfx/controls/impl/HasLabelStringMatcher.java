@@ -59,7 +59,8 @@ public class HasLabelStringMatcher extends TypeSafeMatcher<Object> {
 
     private boolean nodeHasLabel( Node node )
     {
-        checkArgument( node instanceof Labeled || node instanceof TextInputControl || node instanceof Text, "Target node must be Labeled or TextInputControl or Text, was ("+node.getClass().getName()+")." );
+        checkArgument( node instanceof Labeled || node instanceof TextInputControl || node instanceof Text,
+		       	"Target node must be Labeled or TextInputControl or Text, was ("+node.getClass().getName()+")." );
 
         if( node instanceof Labeled )
         {
